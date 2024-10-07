@@ -84,3 +84,36 @@ func TestGetAllProduct(t *testing.T) {
 
 	clear(ctx, dbPool)
 }
+func TestGetAllProductsByStore(t *testing.T) {
+	setup(ctx, dbPool)
+	expectedProducts := []domain.Product{
+		{
+			Id:       1,
+			Name:     "AirFryer",
+			Price:    3000.0,
+			Discount: 22.0,
+			Store:    "ABC TECH",
+		},
+		{
+			Id:       2,
+			Name:     "Ütü",
+			Price:    1500.0,
+			Discount: 10.0,
+			Store:    "ABC TECH",
+		},
+		{
+			Id:       3,
+			Name:     "Çamaşır Makinesi",
+			Price:    10000.0,
+			Discount: 15.0,
+			Store:    "ABC TECH",
+		},
+	}
+	t.Run("GetAllProductsByStore", func(t *testing.T) {
+		actualProducts := productRepository.GetAllProductsByStore("ABC TECH")
+
+		assert.Equal(t, expectedProducts, actualProducts)
+	})
+
+	clear(ctx, dbPool)
+}
