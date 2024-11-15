@@ -153,3 +153,13 @@ func TestGetById(t *testing.T) {
 	})
 	clear(ctx, dbPool)
 }
+func TestDeleteById(t *testing.T) {
+	setup(ctx, dbPool)
+
+	t.Run("Delete", func(t *testing.T) {
+		err := productRepository.DeleteById(2)
+
+		assert.Nil(t, err)
+	})
+	clear(ctx, dbPool)
+}

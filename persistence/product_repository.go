@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"product-app/domain"
+	"product-app/persistence/common"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -16,6 +17,7 @@ type IProductRepository interface {
 	GetAllProductsByStore(storeName string) []domain.Product
 	AddProduct(product domain.Product) error
 	GetById(productId int64) (domain.Product, error)
+	DeleteById(productId int64) error
 }
 
 type ProductRepository struct {
@@ -108,7 +110,7 @@ func (productRepository *ProductRepository) GetById(productId int64) (domain.Pro
 
 	scanErr := queryRow.Scan(&id, &name, &price, &discount, &store)
 
-	if scanErr != nil && scanErr.Error() == "no rows in result set" {
+	if scanErr != nil && scanErr.Error() == common.NOT_FOUND {
 		return domain.Product{}, errors.New(fmt.Sprintf("Product not found with id %d", productId))
 	}
 	if scanErr != nil {
@@ -123,4 +125,25 @@ func (productRepository *ProductRepository) GetById(productId int64) (domain.Pro
 		Discount: discount,
 		Store:    store,
 	}, nil
+}
+func (ProductRepository *ProductRepository) DeleteById(productId int64) error {
+	ctx := context.Background()
+
+	_, getErr := ProductRepository.GetById(productId)
+
+	if getErr != nil {
+		return errors.New("Product not found")
+	}
+
+	deleteSql := `delete from products where id=$1`
+
+	_, err := ProductRepository.dbPool.Exec(ctx, deleteSql, productId)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error while deleting product with id %d", productId))
+	}
+
+	log.Info("Product deleted")
+
+	return nil
+
 }
