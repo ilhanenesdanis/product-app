@@ -117,3 +117,20 @@ func TestGetAllProductsByStore(t *testing.T) {
 
 	clear(ctx, dbPool)
 }
+func TestAddProduct(t *testing.T) {
+	newProduct := domain.Product{
+		Name:     "Kupa",
+		Price:    100.0,
+		Discount: 0.0,
+		Store:    "DNS",
+	}
+
+	t.Run("AddProduct", func(t *testing.T) {
+		productRepository.AddProduct(newProduct)
+
+		actualProducts := productRepository.GetAllProducts()
+
+		assert.Equal(t, 1, len(actualProducts))
+	})
+	clear(ctx, dbPool)
+}

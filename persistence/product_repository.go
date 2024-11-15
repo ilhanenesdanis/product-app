@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"product-app/domain"
 
 	"github.com/jackc/pgx/v4"
@@ -12,6 +13,7 @@ import (
 type IProductRepository interface {
 	GetAllProducts() []domain.Product
 	GetAllProductsByStore(storeName string) []domain.Product
+	AddProduct(product domain.Product) error
 }
 
 type ProductRepository struct {
@@ -71,4 +73,21 @@ func extractProductFromRows(productRows pgx.Rows) []domain.Product {
 		})
 	}
 	return products
+}
+func (productRepository *ProductRepository) AddProduct(product domain.Product) error {
+	ctx := context.Background()
+
+	insert_sql := `Insert into products (name,price,discount,store) values ($1,$2,$3,$4)`
+
+	addNew, err := productRepository.dbPool.Exec(ctx, insert_sql, product.Name, product.Price, product.Discount, product.Store)
+
+	if err != nil {
+		log.Error("Failed to add new product ", err)
+		return err
+	}
+
+	log.Info(fmt.Printf("Product added with %v", addNew))
+
+	return nil
+
 }
