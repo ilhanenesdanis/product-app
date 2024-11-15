@@ -134,3 +134,22 @@ func TestAddProduct(t *testing.T) {
 	})
 	clear(ctx, dbPool)
 }
+
+func TestGetById(t *testing.T) {
+	setup(ctx, dbPool)
+
+	t.Run("GetById", func(t *testing.T) {
+		product, err := productRepository.GetById(2)
+
+		assert.Nil(t, err)
+
+		assert.Equal(t, domain.Product{
+			Id:       2,
+			Name:     "Ütü",
+			Price:    1500.0,
+			Discount: 10.0,
+			Store:    "ABC TECH",
+		}, product)
+	})
+	clear(ctx, dbPool)
+}
