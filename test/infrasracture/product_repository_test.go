@@ -155,9 +155,18 @@ func TestGetById(t *testing.T) {
 }
 func TestDeleteById(t *testing.T) {
 	setup(ctx, dbPool)
-
 	t.Run("Delete", func(t *testing.T) {
 		err := productRepository.DeleteById(2)
+
+		assert.Nil(t, err)
+	})
+	clear(ctx, dbPool)
+}
+
+func TestUpdate(t *testing.T) {
+	setup(ctx, dbPool)
+	t.Run("Update", func(t *testing.T) {
+		err := productRepository.UpdatePrice(2, 4000)
 
 		assert.Nil(t, err)
 	})
